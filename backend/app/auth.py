@@ -3,6 +3,7 @@ import hmac
 import json
 import secrets
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 import bcrypt
@@ -21,6 +22,27 @@ settings = get_settings()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
 OAUTH_STATE_MAX_AGE_SECONDS = 600
+
+
+@dataclass(frozen=True)
+class StravaOAuthState:
+    mode: str  # "login" | "connect"
+    user_id: uuid.UUID | None = None
+
+
+def _sign_state_payload(data: dict) -> str:
+    payload_data = {
+        **data,
+        "nonce": secrets.token_urlsafe(8),
+        "iat": int(datetime.utcnow().timestamp()),
+    }
+    payload = json.dumps(payload_data, separators=(",", ":"))
+    sig = hmac.new(
+        settings.auth_secret.encode(),
+        payload.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    return f"{payload}|{sig}"
 
 
 def hash_password(password: str) -> str:
@@ -49,22 +71,14 @@ def decode_token(token: str) -> dict:
 
 
 def sign_oauth_state(user_id: uuid.UUID) -> str:
-    payload = json.dumps(
-        {
-            "user_id": str(user_id),
-            "nonce": secrets.token_urlsafe(8),
-            "iat": int(datetime.utcnow().timestamp()),
-        }
-    )
-    sig = hmac.new(
-        settings.auth_secret.encode(),
-        payload.encode(),
-        hashlib.sha256,
-    ).hexdigest()
-    return f"{payload}|{sig}"
+    return _sign_state_payload({"mode": "connect", "user_id": str(user_id)})
 
 
-def verify_oauth_state(state: str) -> uuid.UUID:
+def sign_strava_login_state() -> str:
+    return _sign_state_payload({"mode": "login"})
+
+
+def verify_strava_oauth_state(state: str) -> StravaOAuthState:
     try:
         payload_part, sig = state.rsplit("|", 1)
         expected = hmac.new(
@@ -78,7 +92,13 @@ def verify_oauth_state(state: str) -> uuid.UUID:
         issued = data.get("iat")
         if issued is None or int(datetime.utcnow().timestamp()) - int(issued) > OAUTH_STATE_MAX_AGE_SECONDS:
             raise ValueError("expired state")
-        return uuid.UUID(data["user_id"])
+        mode = data.get("mode")
+        if mode == "login":
+            return StravaOAuthState(mode="login")
+        user_id = data.get("user_id")
+        if user_id:
+            return StravaOAuthState(mode="connect", user_id=uuid.UUID(user_id))
+        raise ValueError("unknown state")
     except Exception as exc:
         raise HTTPException(status_code=400, detail="Invalid OAuth state") from exc
 

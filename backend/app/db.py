@@ -31,6 +31,7 @@ engine = create_engine(
     pool_size=5,
     max_overflow=5,
     connect_args={
+        "sslmode": "require",
         "connect_timeout": 10,
         "keepalives": 1,
         "keepalives_idle": 30,

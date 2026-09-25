@@ -357,7 +357,7 @@ export default function HomePage() {
               tooltip="Share of workout time in each heart-rate band, from your max and resting HR."
             />
             <ZoneDonut zones={m?.zone_distribution_pct ?? {}} showSessionLog={false} />
-            <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-muted)]">
+            <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-muted)]">
               <span>
                 Zones use max <strong className="text-[var(--text-secondary)]">{dash?.athlete?.max_heart_rate}</strong>{" "}
                 and rest <strong className="text-[var(--text-secondary)]">{dash?.athlete?.resting_heart_rate}</strong> bpm

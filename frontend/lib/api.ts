@@ -24,10 +24,37 @@ export async function apiFetch<T>(
   });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(text || `HTTP ${res.status}`);
+    throw new Error(friendlyApiError(text, res.status));
   }
   if (res.status === 204) return {} as T;
   return res.json();
+}
+
+/** Map FastAPI JSON errors to short copy; never surface raw JSON in the UI. */
+export function friendlyApiError(body: string, status?: number): string {
+  const generic =
+    status === 401
+      ? "We couldn't sign you in. Check your email and password, or continue with Strava."
+      : "Something went wrong. Please try again.";
+
+  if (!body?.trim()) return generic;
+
+  try {
+    const parsed = JSON.parse(body) as { detail?: unknown };
+    const detail = parsed.detail;
+    if (typeof detail === "string") {
+      const map: Record<string, string> = {
+        "Invalid credentials": generic,
+        "Email already registered": "That email is already registered. Sign in instead.",
+        "Not authenticated": "Your session expired. Please sign in again.",
+      };
+      return map[detail] ?? generic;
+    }
+  } catch {
+    if (body.includes("Invalid credentials")) return generic;
+  }
+
+  return generic;
 }
 
 export { API_URL };

@@ -21,6 +21,7 @@ type AuthCtx = {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
+  acceptAccessToken: (token: string) => Promise<void>;
   logout: () => void;
   refresh: () => Promise<void>;
 };
@@ -67,13 +68,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user);
   };
 
+  const acceptAccessToken = async (token: string) => {
+    localStorage.setItem("access_token", token);
+    await refresh();
+  };
+
   const logout = () => {
     localStorage.removeItem("access_token");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refresh }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, register, acceptAccessToken, logout, refresh }}
+    >
       {children}
     </AuthContext.Provider>
   );
