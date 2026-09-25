@@ -20,10 +20,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Zone 2 Autonomous AI Coach", lifespan=lifespan)
 
-origins = [settings.frontend_url, "http://localhost:3000"]
+_cors_origins = [
+    settings.frontend_url.rstrip("/"),
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=_cors_origins,
+    # Vercel production + preview URLs (must match the site you open in the browser).
+    allow_origin_regex=r"https://([a-z0-9-]+\.)*vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

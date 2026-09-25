@@ -10,10 +10,12 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = getToken();
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(options.headers || {}),
-  };
+  const headers: HeadersInit = { ...(options.headers || {}) };
+  const method = (options.method || "GET").toUpperCase();
+  const hasBody = options.body != null && options.body !== "";
+  if (hasBody && !(headers as Record<string, string>)["Content-Type"]) {
+    (headers as Record<string, string>)["Content-Type"] = "application/json";
+  }
   if (token) {
     (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
   }
