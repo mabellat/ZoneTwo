@@ -11,9 +11,12 @@ const GENERIC_SIGN_IN_ERROR =
   "We couldn't sign you in. Try again with Strava, or check your email and password.";
 
 const AUTH_ERRORS: Record<string, string> = {
-  cancelled: GENERIC_SIGN_IN_ERROR,
-  token_failed: GENERIC_SIGN_IN_ERROR,
+  cancelled: "Strava sign-in was cancelled. Try again when you're ready.",
+  token_failed:
+    "Strava could not connect to the app. In Strava API settings, set Authorization Callback Domain to your Render API host (e.g. your-app.onrender.com). On Render, STRAVA_REDIRECT_URI must be https://that-host/api/strava/callback — same as in Strava.",
   user_not_found: GENERIC_SIGN_IN_ERROR,
+  session_failed:
+    "You're almost in — we connected Strava but the app session didn't start. Check NEXT_PUBLIC_API_URL on Vercel matches your Render API URL, then try again.",
 };
 
 function LoginForm() {
@@ -43,7 +46,7 @@ function LoginForm() {
         window.history.replaceState(null, "", "/login");
         router.replace("/home");
       })
-      .catch(() => setError(GENERIC_SIGN_IN_ERROR))
+      .catch(() => setError(AUTH_ERRORS.session_failed))
       .finally(() => setSubmitting(false));
   }, [searchParams, acceptAccessToken, router]);
 

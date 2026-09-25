@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from urllib.parse import quote
+from urllib.parse import urlencode
 
 import httpx
 from fastapi import APIRouter, Depends, Query
@@ -26,15 +26,17 @@ settings = get_settings()
 
 
 def _strava_authorize_url(state: str) -> str:
-    return (
-        f"https://www.strava.com/oauth/authorize?"
-        f"client_id={settings.strava_client_id}&"
-        f"response_type=code&"
-        f"redirect_uri={settings.strava_redirect_uri}&"
-        f"approval_prompt=auto&"
-        f"scope=read,activity:read_all&"
-        f"state={quote(state, safe='')}"
+    params = urlencode(
+        {
+            "client_id": settings.strava_client_id,
+            "response_type": "code",
+            "redirect_uri": settings.strava_redirect_uri,
+            "approval_prompt": "auto",
+            "scope": "read,activity:read_all",
+            "state": state,
+        }
     )
+    return f"https://www.strava.com/oauth/authorize?{params}"
 
 
 async def _exchange_code_for_tokens(client: httpx.AsyncClient, code: str) -> dict:
@@ -123,18 +125,25 @@ async def strava_callback(
             except ValueError:
                 return RedirectResponse(url=f"{frontend}/login?auth_error=token_failed")
 
-            strava = StravaClient(db, user)
-            await strava.sync_activities(full_backfill=True)
+            try:
+                strava = StravaClient(db, user)
+                await strava.sync_activities(full_backfill=True)
+            except Exception as exc:
+                logger.warning("Strava sync after login failed (user can sync later): %s", exc)
 
             jwt = create_access_token(user.id, user.email)
-            return RedirectResponse(url=f"{frontend}/login#access_token={jwt}")
+            fragment = urlencode({"access_token": jwt})
+            return RedirectResponse(url=f"{frontend}/login#{fragment}")
 
         user = db.query(User).filter(User.id == oauth_state.user_id).first()
         if not user:
             return RedirectResponse(url=f"{frontend}/login?auth_error=user_not_found")
 
         _apply_tokens_to_user(user, tokens, db)
-        strava = StravaClient(db, user)
-        await strava.sync_activities(full_backfill=True)
+        try:
+            strava = StravaClient(db, user)
+            await strava.sync_activities(full_backfill=True)
+        except Exception as exc:
+            logger.warning("Strava sync after connect failed: %s", exc)
 
     return RedirectResponse(url=f"{frontend}/home?strava_connected=true")
