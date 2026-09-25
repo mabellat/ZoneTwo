@@ -1,0 +1,13 @@
+# Conda: Python runtime only. Install app deps after activate:
+#   conda activate strava-z2-coach
+#   pip install -r requirements.txt
+#
+# Create env (run from this backend/ folder):
+#   conda env create -f environment.yml
+
+name: strava-z2-coach
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip

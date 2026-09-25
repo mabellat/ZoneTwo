@@ -1,0 +1,3 @@
+# FastAPI routes use Depends() in defaults (B008). Datetime style left as-is for now.
+[lint]
+ignore = ["B008", "DTZ003", "DTZ004", "DTZ011", "BLE001", "SIM102"]

@@ -1,0 +1,325 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #15191c;
+  --ink-soft: #2a3036;
+  --paper: #f2efe8;
+  --card: #ffffff;
+  --signal: #ff5a1f;
+  --signal-hover: #e84d15;
+  --signal-muted: rgba(255, 90, 31, 0.12);
+  --pine: #1f6f5c;
+  --pine-muted: rgba(31, 111, 92, 0.12);
+  --sand: #e6dfd2;
+
+  --brand-black: var(--ink);
+  --brand-black-hover: var(--ink-soft);
+  --bg-base: var(--paper);
+  --bg-elevated: var(--card);
+  --bg-subtle: #ebe6dc;
+  --bg-muted: #f7f5f0;
+  --border: rgba(21, 25, 28, 0.09);
+  --border-strong: rgba(21, 25, 28, 0.16);
+  --text-primary: var(--ink);
+  --text-secondary: #4f565c;
+  --text-muted: #858b90;
+  --accent: var(--signal);
+  --accent-deep: var(--signal-hover);
+  --accent-muted: var(--signal-muted);
+  --success: var(--pine);
+  --warning: #c2410c;
+  --chart-bar: var(--ink-soft);
+  --chart-bar-dim: #d9d3c7;
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgba(21, 25, 28, 0.05), 0 4px 14px rgba(21, 25, 28, 0.04);
+  --shadow-hover: 0 10px 28px rgba(21, 25, 28, 0.1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  body {
+    @apply antialiased app-bg;
+    color: var(--text-primary);
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply relative z-10 w-full flex-1 mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 2xl:px-12 pt-4 pb-8 lg:pb-10;
+  }
+
+  .page-shell-scroll {
+    @apply page-shell;
+  }
+
+  .page-narrow {
+    @apply max-w-3xl;
+  }
+
+  .page-medium {
+    @apply max-w-5xl;
+  }
+
+  .surface,
+  .surface-solid {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .surface-interactive {
+    transition: box-shadow 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  }
+
+  .surface-interactive:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary,
+  .btn-strava {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 active:scale-[0.97];
+    background: var(--ink);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary:hover:not(:disabled),
+  .btn-strava:hover:not(:disabled) {
+    background: var(--ink-soft);
+  }
+
+  .btn-primary:disabled,
+  .btn-strava:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-signal {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200;
+    background: var(--signal);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-signal:hover:not(:disabled) {
+    background: var(--signal-hover);
+  }
+
+  .btn-back {
+    @apply inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.45rem 0.9rem 0.45rem 0.75rem;
+  }
+
+  .btn-back:hover {
+    background: var(--ink-soft);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 text-sm;
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--border-strong);
+    background: var(--card);
+  }
+
+  .btn-ghost:hover {
+    background: var(--bg-subtle);
+  }
+
+  .btn-ghost-on-dark {
+    @apply inline-flex items-center justify-center gap-2 font-medium transition-all text-sm;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-ghost-on-dark:hover {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .input-field {
+    @apply w-full text-sm outline-none transition;
+    background: var(--card);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    color: var(--text-primary);
+  }
+
+  .input-field:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(21, 25, 28, 0.08);
+  }
+
+  /* Typography system */
+  .headline {
+    @apply font-display font-extrabold;
+    font-variation-settings: "wdth" 78, "opsz" 96;
+    letter-spacing: -0.025em;
+    line-height: 0.92;
+  }
+
+  .serif-accent {
+    @apply font-serif italic font-normal;
+    letter-spacing: -0.01em;
+  }
+
+  .eyebrow,
+  .kpi-label {
+    @apply font-mono text-[10.5px] font-medium uppercase tracking-[0.14em];
+    color: var(--text-muted);
+  }
+
+  .section-title {
+    @apply font-display text-2xl font-bold leading-none;
+    font-variation-settings: "wdth" 85, "opsz" 48;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+  }
+
+  .display-num {
+    @apply font-display font-bold tabular-nums leading-none;
+    font-variation-settings: "wdth" 75, "opsz" 96;
+    letter-spacing: -0.02em;
+  }
+
+  .mono-stat {
+    @apply font-mono tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Film grain for photo layers */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .scoreboard {
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 32px rgba(21, 25, 28, 0.22);
+  }
+
+  .prose-coach {
+    @apply text-[15px] leading-relaxed;
+    color: var(--text-primary);
+  }
+
+  .prose-coach h3 {
+    @apply font-semibold text-base mt-4 mb-2;
+  }
+
+  .prose-coach p {
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .prose-coach ul {
+    list-style: disc;
+    margin: 0.5rem 0 0.75rem 1.25rem;
+    color: var(--text-secondary);
+  }
+
+  .prose-coach strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .prose-coach hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1rem 0;
+  }
+
+  .link-subtle {
+    @apply text-sm font-semibold transition-colors;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  .link-subtle:hover {
+    color: var(--signal);
+  }
+
+  .badge-pill {
+    @apply text-xs px-2.5 py-1 rounded-md font-semibold;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+  }
+
+  .chip-signal {
+    @apply text-xs px-2.5 py-1 rounded-md font-semibold;
+    background: var(--signal-muted);
+    color: var(--signal-hover);
+  }
+
+  /**
+   * Studio paper — used on body, scroll regions, and paper-mode routes.
+   * Hero routes still use this below the photo fade in MainCanvas.
+   */
+  .app-bg,
+  .topo-bg {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(ellipse 130% 90% at 50% -25%, rgba(230, 223, 210, 0.65), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 100% 0%, rgba(31, 111, 92, 0.05), transparent 50%),
+      radial-gradient(ellipse 60% 40% at 0% 100%, rgba(255, 90, 31, 0.04), transparent 45%),
+      repeating-radial-gradient(
+        circle at 12% 18%,
+        transparent 0 26px,
+        rgba(21, 25, 28, 0.028) 26px 27px
+      ),
+      repeating-radial-gradient(
+        circle at 88% 72%,
+        transparent 0 34px,
+        rgba(21, 25, 28, 0.022) 34px 35px
+      );
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s var(--ease-out) forwards;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up {
+    opacity: 1;
+  }
+}
