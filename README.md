@@ -1,4 +1,4 @@
-# Zone 2 Coach
+# ZoneTwo
 
 An endurance coaching platform built on real Strava data. Deterministic analytics and a rule-based periodization engine drive the product surface; a tool-calling Gemini agent handles conversational coaching, grounded on the same database the dashboard reads.
 
